@@ -4,9 +4,9 @@ String sdata="";
 
 void setup() {
   // put your setup code here, to run once:
-
-  Serial.begin(9600); 
-  Serial1.begin(112149, SERIAL_8E1);
+  pinMode(13,OUTPUT);
+  Serial.begin(19200); 
+  Serial1.begin(119000, SERIAL_8E1);
   Serial.setTimeout(250);
   digitalWrite(2,HIGH);
   delay(100);
@@ -43,8 +43,26 @@ void setup() {
 
 }
 
+void echoSerial() {
+  char data[10];
+  digitalWrite(13,!digitalRead(13));  
+
+  if (Serial1.available() > 0) {     // If anything comes in SBR Serial port (pins 0 & 1)
+    while (Serial1.available() > 0){
+      Serial1.readBytes(data,9);   // read it
+    }
+   }
+   Serial.write(data,9);    //send it out to the PC Serial port USB unchanged.
+  while(Serial1.available()) {
+    char clearData = Serial1.read();
+  }
+}
+
+
 void loop() {
  loop_counter++;
+
+
 
  if (Serial.available())       // If anything comes in Serial (USB),
   {
@@ -90,6 +108,7 @@ void loop() {
         Serial1.write(0x99);
         Serial1.write(0x02);
         Serial1.write(0x9B);
+        echoSerial();
       }
       else if (sdata.indexOf("A2Init")>=0)
       {
@@ -374,16 +393,17 @@ void loop() {
   
   }
 
-  if (Serial1.available()) {     // If anything comes in SBR Serial port (pins 0 & 1)
-    Serial.write(Serial1.read());   // read it and send it out to the PC Serial port USB unchanged.
-  }
+
+
+  
 if (loop_counter == 250)
   {
-    if (comcheck) 
-    {
+    if (comcheck){ 
+  
       Serial1.write(0x68);
     }
     loop_counter = 0;
   } 
   delay(1);
+
 }
